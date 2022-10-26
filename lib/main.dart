@@ -6,6 +6,8 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -18,14 +20,8 @@ class _MyAppState extends State<MyApp> {
         "/homePage": (context) => HomeScreen(),
       },
       initialRoute: '/',
-      theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: AppBarTheme(
-              color: Colors.white,
-              elevation: 0,
-              iconTheme: IconThemeData(color: Colors.black))),
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

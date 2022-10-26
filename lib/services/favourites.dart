@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:lovester/models/population.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

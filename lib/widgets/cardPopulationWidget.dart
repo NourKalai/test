@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:lovester/models/population.dart';
+import 'package:lovester/widgets/dataWidget.dart';
 
-class CardWidget extends StatelessWidget {
-  const CardWidget({Key? key, this.snapshot, this.index}) : super(key: key);
+import '../config.dart';
+
+class CardPopulationWidget extends StatelessWidget {
+  const CardPopulationWidget({Key? key, this.snapshot, this.index})
+      : super(key: key);
   final snapshot;
   final index;
+
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Color.fromARGB(255, 125, 196, 115),
+      color: Config.data[index + 2 % 10]["color"],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Column(
         children: [
@@ -19,16 +25,8 @@ class CardWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(
-                  Icons.people_outline_sharp,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                Text(
-                  snapshot.data![index].country,
-                  style: TextStyle(
-                      fontSize: 20, color: Color.fromARGB(255, 237, 243, 237)),
-                ),
+                iconWidget(Icons.people_outline_sharp),
+                titleWidget(snapshot.data![index].country),
               ],
             ),
           ),

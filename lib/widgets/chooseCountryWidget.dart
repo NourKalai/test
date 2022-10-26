@@ -1,12 +1,8 @@
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 import '../models/flag.dart';
 import '../services/countryService.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class x {
   static String filterCountry = "";
