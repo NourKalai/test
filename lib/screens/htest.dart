@@ -241,32 +241,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           } else if (isFavorite == true) {
                             return Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(5),
                               child: GridView.builder(
                                   itemCount: favourite.favourites.length,
                                   gridDelegate:
                                       SliverGridDelegateWithFixedCrossAxisCount(
-                                          childAspectRatio:
-                                              MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  (MediaQuery.of(context)
-                                                      .size
-                                                      .height),
-                                          crossAxisCount: 2),
+                                    crossAxisCount: 2,
+                                    childAspectRatio: MediaQuery.of(context)
+                                            .size
+                                            .width /
+                                        (MediaQuery.of(context).size.height),
+                                  ),
                                   itemBuilder: (context, index) {
                                     return Column(
                                       children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              favourite
-                                                  .favourites[index].country,
-                                              style: TextStyle(fontSize: 20),
-                                            ),
-                                          ],
+                                        Text(
+                                          favourite.favourites[index].country,
+                                          style: TextStyle(fontSize: 20),
                                         ),
                                         SizedBox(height: 10),
                                         Text(
