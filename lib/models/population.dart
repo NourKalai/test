@@ -1,5 +1,13 @@
 import 'dart:convert';
+Population populationFromJson(String str) {
+  final jsonData = json.decode(str);
+  return Population.fromJson(jsonData);
+}
 
+String populationToJson(Population data) {
+  final dyn = data.toJson();
+  return json.encode(dyn);
+}
 class Population {
   int id;
 
@@ -15,7 +23,16 @@ class Population {
     required this.counts,
     this.favorite = false,
   });
+  factory Population.fromJson(Map<String, dynamic> jsonData) => Population(
+        id: jsonData['id'],
+        city: jsonData['city'],
+        country: jsonData['country'],
+        counts: List<PopulationCounts>.from(
+            jsonData["counts"].map((x) => PopulationCounts.fromJson(x))),
+        favorite: false,
+      );
 
+ 
   factory Population.fromMap(Map data) {
     return Population(
         id: data['id'],
@@ -26,6 +43,11 @@ class Population {
             .map((e) => PopulationCounts.fromMap(e))
             .toList());
   }
+    Map<String, dynamic> toJson() => {
+    "city": city,
+        "country": city,
+    "counts": new List<dynamic>.from(counts.map((x) => x.toJson())),
+  };
   static Map<String, dynamic> toMap(Population population) => {
         'id': population.id,
         'city': population.city,
@@ -39,16 +61,6 @@ class Population {
                 (population) => Population.toMap(population))
             .toList(),
       );
-
-  factory Population.fromJson(Map<String, dynamic> jsonData) {
-    return Population(
-      id: jsonData['id'],
-      city: jsonData['city'],
-      country: jsonData['country'],
-      counts: jsonData['counts'],
-      favorite: false,
-    );
-  }
 
   static List<Population> decode(String populations) =>
       (json.decode(populations) as List<dynamic>)
@@ -70,4 +82,13 @@ class PopulationCounts {
   factory PopulationCounts.fromMap(Map data) {
     return PopulationCounts(year: data['year'], value: data['value']);
   }
+
+   factory PopulationCounts.fromJson(Map<String, dynamic> jsonData) => PopulationCounts(
+        year: jsonData['year'],
+        value: jsonData['value'],
+      );
+        Map<String, dynamic> toJson() => {
+    "year": year,
+        "value": value,
+  };
 }

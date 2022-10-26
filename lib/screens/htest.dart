@@ -8,6 +8,7 @@ import 'package:lovester/models/Data.dart';
 import 'package:lovester/models/flag.dart';
 import 'package:lovester/models/population.dart';
 import 'package:lovester/services/countryService.dart';
+import 'package:lovester/services/favourites.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String filterCountry = "";
   List populations = [];
   int id = 0;
-  List<Population> favorites = [];
 
   @override
   void initState() {
@@ -34,26 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  void main(Population p) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    // Encode and store data in SharedPreferences
-    final String encodedData = Population.encode([
-      Population(
-        id: id++,
-        city: p.city,
-        country: p.country,
-        counts: p.counts,
-      ),
-    ]);
-    // await prefs.setString('favorite_key', encodedData);
-    // // Fetch and decode data
-    // final String? populationsString =
-    //     await prefs.getString('populationsString_key');
-    // final List<Population> favorites = Population.decode(populationsString!);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final favourite = Favourite.instance;
     return FutureBuilder<List<Population>>(
         future: CountryServices().getPop(filterCountry),
         builder: (context, snapshot) {
@@ -218,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return GestureDetector(
                               onLongPress: () async {
                                 setState(() {
-                                  main(snapshot.data![index]);
+                                  Favourite.instance.add(snapshot.data![index]);
                                 });
                               },
                               child: Padding(
@@ -259,30 +242,48 @@ class _HomeScreenState extends State<HomeScreen> {
                           } else if (isFavorite == true) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        snapshot.data![index].country,
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                      'population:' +
-                                          snapshot.data![index].counts[0].value
-                                              .toString(),
-                                      style: TextStyle(fontSize: 18)),
-                                  SizedBox(height: 10),
-                                  Text(
-                                      'year:' +
-                                          snapshot.data![index].counts[0].year,
-                                      style: TextStyle(fontSize: 18)),
-                                ],
-                              ),
+                              child: GridView.builder(
+                                  itemCount: favourite.favourites.length,
+                                  gridDelegate:
+                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                          childAspectRatio:
+                                              MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  (MediaQuery.of(context)
+                                                      .size
+                                                      .height),
+                                          crossAxisCount: 2),
+                                  itemBuilder: (context, index) {
+                                    return Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              favourite
+                                                  .favourites[index].country,
+                                              style: TextStyle(fontSize: 20),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 10),
+                                        Text(
+                                            'population:' +
+                                                favourite.favourites[index]
+                                                    .counts[0].value
+                                                    .toString(),
+                                            style: TextStyle(fontSize: 18)),
+                                        SizedBox(height: 10),
+                                        Text(
+                                            'year:' +
+                                                favourite.favourites[index]
+                                                    .counts[0].year,
+                                            style: TextStyle(fontSize: 18)),
+                                      ],
+                                    );
+                                  }),
                             );
                           } else
                             return Text("Nothing ");
