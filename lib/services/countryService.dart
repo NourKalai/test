@@ -30,7 +30,7 @@ class CountryServices {
     }
   }
 
-  Future<List<Population>> getPop(String? nameCountry, List? favorites,bool isFavorite) async {
+  Future<List<Population>> getPop(String? nameCountry) async {
     var response = await http.get(Uri.parse(
         'https://countriesnow.space/api/v0.1/countries/population/cities'));
     var data = jsonDecode(response.body.toString());
@@ -43,14 +43,14 @@ class CountryServices {
           list.where((element) => element.country == nameCountry).toList();
 
       return dumy;
-    } else if ((response.statusCode == 200 && isFavorite)) {
-      final Map<String, dynamic> body = json.decode(response.body);
-      List<Population> list =
-          List.from(body['data']).map((e) => Population.fromMap(e)).toList();
-      List<Population> dumy =
-          list.where((element) => favorites!.contains(element.city)).toList();
+    // } else if ((response.statusCode == 200 && isFavorite)) {
+    //   final Map<String, dynamic> body = json.decode(response.body);
+    //   List<Population> list =
+    //       List.from(body['data']).map((e) => Population.fromMap(e)).toList();
+    //   List<Population> dumy =
+    //       list.where((element) => favorites!.contains(element.city)).toList();
 
-      return dumy;
+    //   return dumy;
     } else if (response.statusCode == 200 && nameCountry == "") {
       final Map<String, dynamic> body = json.decode(response.body);
       List<Population> list =

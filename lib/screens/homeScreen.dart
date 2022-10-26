@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:lovester/main.dart';
 import 'package:lovester/models/Data.dart';
 import 'package:lovester/models/flag.dart';
 import 'package:lovester/models/population.dart';
@@ -23,32 +24,40 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isPopulation = true;
   String filterCountry = "";
   List populations = [];
-  List favorites = [];
-
-  Future<List<Dataa>> favor(snapshot, index) async {
-    final List<Dataa> finallist = [];
-    final prefs = await SharedPreferences.getInstance();
-    final List<String>? items = await prefs.getStringList('favorites');
-    final Map dataa = snapshot.data!.data;
-    if (items!.contains(dataa[index].city)) {
-      finallist.add(Dataa(
-        city: dataa[index].city,
-        country: dataa[index].country,
-        populationCounts: dataa[index].populationCounts,
-      ));
-    }
-    return finallist;
-  }
+  int id = 0;
+  List<Population> favorites = [];
 
   @override
-  void initState() async {
+  void initState() {
+    String filterCountry = "";
+
     super.initState();
+  }
+
+  void main(Population p) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Encode and store data in SharedPreferences
+    final String encodedData = Population.encode([
+      Population(
+        id: id++,
+        city: p.city,
+        country: p.country,
+        counts: p.counts,
+      ),
+    ]);
+    await prefs.setString('musics_key', encodedData);
+
+    // Fetch and decode data
+    final String? populationsString =
+        await prefs.getString('populationsString_key');
+
+    final List<Population> favorites = Population.decode(populationsString!);
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Population>>(
-        future: CountryServices().getPop(filterCountry,),
+        future: CountryServices().getPop(filterCountry),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Scaffold(
@@ -84,7 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icons.favorite,
                       ),
                       onPressed: () async {
-
                         setState(() {
                           isFavorite = true;
                         });
@@ -206,7 +214,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           if (isPopulation == true) {
                             return GestureDetector(
-                              onLongPress: () async {},
+                              onLongPress: () async {
+                                setState(() {
+                                  main(snapshot.data![index]);
+                                });
+                              },
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
@@ -243,48 +255,31 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             );
                           } else if (isFavorite == true) {
-                            return GestureDetector(
-                              onLongPress: () async {
-                                final prefs =
-                                    await SharedPreferences.getInstance();
-                                final List<String>? items =
-                                    await prefs.getStringList('favorites');
-                                items == null
-                                    ? await prefs.setStringList(
-                                        'favorites', [favorites[index].city])
-                                    : items.add(favorites[index].city);
-                                await prefs.setStringList('favorites', items!);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          favorites[index].country,
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                        'population:' +
-                                            favorites[index]
-                                                .populationCounts[0]
-                                                .value
-                                                .toString(),
-                                        style: TextStyle(fontSize: 18)),
-                                    SizedBox(height: 10),
-                                    Text(
-                                        'year:' +
-                                            favorites[index]
-                                                .populationCounts[0]
-                                                .year,
-                                        style: TextStyle(fontSize: 18)),
-                                  ],
-                                ),
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        snapshot.data![index].country,
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                      'population:' +
+                                          snapshot.data![index].counts[0].value
+                                              .toString(),
+                                      style: TextStyle(fontSize: 18)),
+                                  SizedBox(height: 10),
+                                  Text(
+                                      'year:' +
+                                          snapshot.data![index].counts[0].year,
+                                      style: TextStyle(fontSize: 18)),
+                                ],
                               ),
                             );
                           } else
