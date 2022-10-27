@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Population> favorites = [];
 
   setupFav() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     String? stringFav = prefs.getString("favorite");
     if (stringFav != null) {
       List favoriteList = jsonDecode(stringFav);
