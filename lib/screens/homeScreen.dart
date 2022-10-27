@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isPopulation = true;
   String filterCountry = "";
   List<Population> favorites = [];
+
   setupFav() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? stringFav = prefs.getString("favorite");
