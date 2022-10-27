@@ -43,9 +43,9 @@ class ChooseCountry extends StatelessWidget {
                                   snapshot.data!.data[index].iso2.toString(),
                                   height: 20,
                                   width: 20,
-                                  replacement: const Text('not found'),
+                                  replacement: Text('not found'),
                                 ),
-                                const SizedBox(width: 5),
+                                SizedBox(width: 5),
                                 TextButton(
                                     onPressed: () {
                                       x.filterCountry = snapshot

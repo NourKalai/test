@@ -19,7 +19,6 @@ class CardPopulationWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Column(
         children: [
-          SizedBox(height: 10),
           Container(
             padding: EdgeInsets.only(right: 5, left: 5),
             child: Row(
@@ -34,16 +33,22 @@ class CardPopulationWidget extends StatelessWidget {
             children: List.generate(
                 1,
                 (position) => Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
-                          Text(
-                              'population:${snapshot.data![index].counts.map((e) => e.value)}',
-                              style: const TextStyle(fontSize: 18)),
-                          const SizedBox(height: 10),
-                          Text(
-                              'year:${snapshot.data![index].counts.map((e) => e.year)}',
-                              style: const TextStyle(fontSize: 18)),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                                'population:${snapshot.data![index].counts.map((e) => e.value)}',
+                                style: const TextStyle(fontSize: 18)),
+                          ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            padding: EdgeInsets.only(top: 10),
+                            child: Text(
+                                'year:${snapshot.data![index].counts.map((e) => e.year)}',
+                                style: const TextStyle(fontSize: 18)),
+                          ),
                         ],
                       ),
                     )),
