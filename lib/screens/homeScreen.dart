@@ -1,10 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:lovester/models/population.dart';
 import 'package:lovester/services/countryService.dart';
-import 'package:lovester/services/favourites.dart';
 import 'package:lovester/widgets/cardPopulationWidget.dart';
-import 'package:lovester/widgets/cardWidgetFav.dart';
 import 'package:lovester/widgets/chooseCountryWidget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config.dart';
 import '../widgets/dataWidget.dart';
@@ -21,10 +22,36 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isFavorite = false;
   bool isPopulation = true;
   String filterCountry = "";
+  List<Population> favorites = [];
+  setupFav() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? stringFav = prefs.getString("favorite");
+    List favoriteList = jsonDecode(stringFav!);
+    for (var pop in favoriteList) {
+      setState(() {
+        favorites.add(Population.fromJson(pop));
+      });
+    }
+  }
+
+  void add(Population p) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (!favorites.contains(p)) favorites.add(p);
+    final String encodedData =
+        json.encode(favorites.map((e) => Population.toMap(e)).toList());
+    await prefs.setString('favorite_key', encodedData);
+    List items = favorites.map((e) => e.toJson()).toList();
+    prefs.setString('favorite', jsonEncode(items));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setupFav();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final favourite = Favourite.instance;
     return FutureBuilder<List<Population>>(
         future: CountryServices().getPopulations(x.filterCountry),
         builder: (context, snapshot) {
@@ -104,8 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               return GestureDetector(
                                   onLongPress: () async {
                                     setState(() {
-                                      Favourite.instance
-                                          .add(snapshot.data![index]);
+                                      add(snapshot.data![index]);
                                     });
                                   },
                                   child: CardPopulationWidget(
@@ -113,7 +139,60 @@ class _HomeScreenState extends State<HomeScreen> {
                                     snapshot: snapshot,
                                   ));
                             })
-                        : const cardFavWidget()));
+                        : GridView.builder(
+                            itemCount: favorites.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                            ),
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Card(
+                                    color: Config.data[index % 5]["color"],
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Column(children: [
+                                        Row(
+                                          children: [
+                                            iconWidget(Icons.favorite_outlined),
+                                            titleWidget(
+                                              favorites[index].country,
+                                            )
+                                          ],
+                                        ),
+                                        Column(
+                                          children: List.generate(
+                                              1,
+                                              (position) => Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            3.0),
+                                                    child: Column(
+                                                      children: [
+                                                        Text(
+                                                            'population:${favorites[index].counts.map((e) => e.value)}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        13)),
+                                                        Text(
+                                                            'year:${favorites[index].counts.map((e) => e.year)}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        13)),
+                                                      ],
+                                                    ),
+                                                  )),
+                                        ),
+                                      ]),
+                                    ),
+                                  ));
+                            })));
           } else {
             return Scaffold(
                 body: Container(

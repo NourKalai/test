@@ -43,9 +43,9 @@ class ChooseCountry extends StatelessWidget {
                                   snapshot.data!.data[index].iso2.toString(),
                                   height: 20,
                                   width: 20,
-                                  replacement: Text('not found'),
+                                  replacement: const Text('not found'),
                                 ),
-                                SizedBox(width: 5),
+                                const SizedBox(width: 5),
                                 TextButton(
                                     onPressed: () {
                                       x.filterCountry = snapshot
@@ -56,7 +56,7 @@ class ChooseCountry extends StatelessWidget {
                                     child: Text(
                                       snapshot.data!.data[index].name
                                           .toString(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 20, color: Colors.green),
                                     ))
                               ]));
