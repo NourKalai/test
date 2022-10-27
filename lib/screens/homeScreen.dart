@@ -18,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late SharedPreferences prefs;
   bool isFilter = false;
   bool isFavorite = false;
   bool isPopulation = true;
@@ -38,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void add(Population p) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     if (!favorites.contains(p)) favorites.add(p);
     final String encodedData =
         json.encode(favorites.map((e) => Population.toMap(e)).toList());
